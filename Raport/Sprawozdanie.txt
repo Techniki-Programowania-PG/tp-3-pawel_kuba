@@ -4,47 +4,69 @@ TECHNIKI PROGRAMOWANIA – Projekt 3
 Paweł Jereczek 203567
 Jakub Jasiak 203658
 
-Wykorzystane biblioteki:
-matplotplusplus (C++) – do wizualizacji wykresów i obrazów
-
-soundfile (Python) – do obsługi plików dźwiękowych
-
-pybind11 – do tworzenia powiązań między C++ a Pythonem
-
-scikit-build-core – do integracji CMake z Pythonem
+Wykorzystane biblioteki
+matplotplusplus (C++) – do tworzenia wykresów i wizualizacji danych
+pybind11 (C++) – do łączenia kodu C++ z Pythonem
 
 Opis projektu
-Celem projektu było zaimplementowanie wybranych algorytmów przetwarzania sygnałów w C++ oraz ich udostępnienie w Pythonie przy pomocy pybind11. Projekt obejmuje implementację dyskretnej transformaty Fouriera (DFT), filtrów 1D i 2D, generatorów sygnałów oraz funkcji wizualizacyjnych z wykorzystaniem biblioteki matplotplusplus.
+Projekt polega na zaimplementowaniu podstawowych operacji na sygnałach cyfrowych, takich jak dyskretna transformata Fouriera (DFT), jej odwrotność (IDFT), filtrowanie 1D i 2D oraz generowanie różnych sygnałów okresowych. Do wizualizacji wyników wykorzystano bibliotekę matplotplusplus, która umożliwia tworzenie wykresów bezpośrednio z kodu C++.
 
-Przykłady wykorzystania
-Wizualizacja wykresów 1D
-Poniższy przykład ilustruje możliwość rysowania wykresów sygnałów jednowymiarowych:
+Całość została opakowana jako moduł Pythona przy użyciu pybind11, co pozwala na wygodne wywoływanie funkcji z poziomu Pythona oraz integrację z biblioteką numpy.
 
-import scikit_build_example as sbe
-import numpy as np
+Kluczowe funkcje i ich opis
+1. Dyskretna Transformata Fouriera (DFT)
+Funkcja dft realizuje klasyczną dyskretną transformatę Fouriera sygnału 1D przekazanego jako wektor wartości typu double. W wyniku zwraca widmo częstotliwościowe jako wektor liczb zespolonych. Dzięki temu można analizować sygnał w dziedzinie częstotliwości.
 
-x = np.linspace(0, 10 * np.pi, 1000)
-y = np.sin(x)
+2. Odwrotna DFT (IDFT)
+Funkcja idft przyjmuje widmo częstotliwościowe i rekonstruuje na jego podstawie sygnał czasowy. Pozwala to na powrót do oryginalnego sygnału po przeprowadzeniu operacji w dziedzinie częstotliwości, np. po filtrowaniu.
 
-sbe.show_signals(y, y, y, y)  # Rysuje 4 wykresy sygnałów (np. oryginalny, zakłócony, po filtracji, zrekonstruowany)
+3. Filtracja 1D
+Funkcja filter1d realizuje prosty filtr wygładzający, który dla każdego punktu sygnału oblicza średnią arytmetyczną wartości w sąsiedztwie (punkt poprzedni, bieżący, następny). Zmniejsza to szum i zakłócenia sygnału.
 
-Dyskretna Transformata Fouriera (DFT)
-Aby zweryfikować poprawność implementacji DFT, wykorzystano dwa przykładowe sygnały sinusoidalne o różnych częstotliwościach:
+4. Filtracja 2D
+filter2d jest filtrem wygładzającym dla obrazów (reprezentowanych jako macierz wartości). Oblicza średnią z otaczających pikseli, co pozwala usunąć zakłócenia i wygładzić obraz.
 
-f = 10
-N = 1000
-t = np.linspace(0, 2 * np.pi, N)
-x = np.sin(f * t)
-X = np.abs(np.fft.rfft(x)) ** 2
-
-sbe.show_signals(x, x, x, x)  # Wizualizacja sygnału i jego transformacji
-Sygnał: sin(10 * ft)
-x = np.sin(10 * f * t)
-X = np.abs(np.fft.rfft(x)) ** 2
-
-sbe.show_signals(x, x, x, x)
+5. Generatory sygnałów
+generate_sin – generuje sinusoidę o zadanej częstotliwości, próbkowaniu i czasie trwania
+generate_cos – generuje cosinusoidę
+generate_square – generuje sygnał prostokątny
+generate_sawtooth – generuje sygnał piłokształtny
 
 
-Podsumowanie
-Projekt pozwolił na praktyczne zapoznanie się z technikami łączenia C++ z Pythonem za pomocą pybind11 oraz na implementację podstawowych algorytmów przetwarzania sygnałów. Wykorzystanie matplotplusplus umożliwiło efektywną wizualizację wyników bezpośrednio z poziomu Pythona.
+6. Wizualizacja
+Funkcje show_signals i show_image służą do wyświetlania sygnałów 1D oraz obrazów 2D z wykorzystaniem matplotplusplus. Pozwala to szybko zwizualizować efekty działania algorytmów i porównać sygnały przed i po przetworzeniu.
 
+Przykłady użycia
+Generowanie i wizualizacja sygnału sinusoidalnego
+
+# Parametry
+freq = 5
+sample_rate = 1000
+duration = 1.0
+
+# Generowanie sygnału
+signal = sbe.generate_sin(freq, sample_rate, duration)
+
+# Wyświetlenie sygnału
+sbe.show_signals(signal, signal, signal, signal)
+
+Analiza widma sygnału za pomocą DFT:
+Po wygenerowaniu sygnału sinusoidalnego wykonujemy jego transformację Fouriera, a następnie wyświetlamy widmo częstotliwościowe.
+------------------------------
+spectrum = sbe.dft(signal)
+power = [abs(c)**2 for c in spectrum]
+
+sbe.plot_line(np.arange(len(power)), power)
+-----------------------------
+
+Filtracja sygnału:
+Na zaszumionym sygnale zastosowano filtr wygładzający, aby usunąć zakłócenia:
+--------------------------------
+noisy_signal = signal + 0.1 * np.random.randn(len(signal))
+filtered_signal = sbe.filter1d(noisy_signal)
+
+sbe.show_signals(signal, noisy_signal, filtered_signal, filtered_signal)
+--------------------------------
+
+Podsumowanie:
+Projekt demonstruje praktyczne zastosowanie transformacji Fouriera i filtracji w przetwarzaniu sygnałów cyfrowych, z efektywną integracją C++ i Pythona. Zaimplementowane funkcje pozwalają generować, analizować oraz wizualizować sygnały i obrazy w prosty i przejrzysty sposób, co jest kluczowe w technikach programowania i cyfrowym przetwarzaniu sygnałów.
