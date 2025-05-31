@@ -1,0 +1,50 @@
+TECHNIKI PROGRAMOWANIA – Projekt 3
+
+
+Paweł Jereczek 203567
+Jakub Jasiak 203658
+
+Wykorzystane biblioteki:
+matplotplusplus (C++) – do wizualizacji wykresów i obrazów
+
+soundfile (Python) – do obsługi plików dźwiękowych
+
+pybind11 – do tworzenia powiązań między C++ a Pythonem
+
+scikit-build-core – do integracji CMake z Pythonem
+
+Opis projektu
+Celem projektu było zaimplementowanie wybranych algorytmów przetwarzania sygnałów w C++ oraz ich udostępnienie w Pythonie przy pomocy pybind11. Projekt obejmuje implementację dyskretnej transformaty Fouriera (DFT), filtrów 1D i 2D, generatorów sygnałów oraz funkcji wizualizacyjnych z wykorzystaniem biblioteki matplotplusplus.
+
+Przykłady wykorzystania
+Wizualizacja wykresów 1D
+Poniższy przykład ilustruje możliwość rysowania wykresów sygnałów jednowymiarowych:
+
+import scikit_build_example as sbe
+import numpy as np
+
+x = np.linspace(0, 10 * np.pi, 1000)
+y = np.sin(x)
+
+sbe.show_signals(y, y, y, y)  # Rysuje 4 wykresy sygnałów (np. oryginalny, zakłócony, po filtracji, zrekonstruowany)
+
+Dyskretna Transformata Fouriera (DFT)
+Aby zweryfikować poprawność implementacji DFT, wykorzystano dwa przykładowe sygnały sinusoidalne o różnych częstotliwościach:
+
+f = 10
+N = 1000
+t = np.linspace(0, 2 * np.pi, N)
+x = np.sin(f * t)
+X = np.abs(np.fft.rfft(x)) ** 2
+
+sbe.show_signals(x, x, x, x)  # Wizualizacja sygnału i jego transformacji
+Sygnał: sin(10 * ft)
+x = np.sin(10 * f * t)
+X = np.abs(np.fft.rfft(x)) ** 2
+
+sbe.show_signals(x, x, x, x)
+
+
+Podsumowanie
+Projekt pozwolił na praktyczne zapoznanie się z technikami łączenia C++ z Pythonem za pomocą pybind11 oraz na implementację podstawowych algorytmów przetwarzania sygnałów. Wykorzystanie matplotplusplus umożliwiło efektywną wizualizację wyników bezpośrednio z poziomu Pythona.
+
